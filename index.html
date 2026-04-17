@@ -12,7 +12,6 @@
             user-select: none;
         }
 
-        /* ----- ОБЩИЕ СТИЛИ ----- */
         body {
             transition: background 0.3s, color 0.2s;
             min-height: 100vh;
@@ -225,6 +224,15 @@
             box-shadow: inset 0 0 15px #ff5e8e;
         }
 
+        /* Зелёная подсветка на пару секунд */
+        .cell.highlight {
+            background: #4caf50 !important;
+            box-shadow: 0 0 20px #4caf50 !important;
+            transition: 0.1s;
+            color: white !important;
+            text-shadow: none;
+        }
+
         .status-text {
             font-size: 0.85rem;
             text-align: center;
@@ -240,7 +248,7 @@
             transform: none;
         }
 
-        /* Рулетка (canvas колесо) */
+        /* Рулетка с кнопкой Крутить */
         .roulette-overlay {
             position: fixed;
             top: 0;
@@ -271,13 +279,24 @@
             border-radius: 50%;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
+        .spin-roulette-btn {
+            background: radial-gradient(circle at 30% 10%, #ffb347, #d4650a);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin: 10px 5px;
+            cursor: pointer;
+            color: white;
+            font-family: 'Orbitron', monospace;
+        }
         .close-roulette {
             background: gold;
             border: none;
             padding: 10px 20px;
             border-radius: 40px;
             font-weight: bold;
-            margin-top: 15px;
+            margin: 10px 5px;
             cursor: pointer;
             color: black;
         }
@@ -288,7 +307,7 @@
             .cell { font-size: 0.8rem; }
         }
 
-        /* ----- ТЕМЫ (4 варианта с улучшенной контрастностью) ----- */
+        /* ----- ТЕМЫ с улучшенной контрастностью (светлый текст в тёмных темах) ----- */
         body.dark {
             background: linear-gradient(145deg, #1e1a3a, #2a2448);
         }
@@ -311,16 +330,19 @@
         body.dark .option-btn {
             background: #3a2b60cc;
             border-color: #c49eff;
-            color: #f0eaff;
+            color: #ffffff;
         }
         body.dark .cell {
             background: radial-gradient(ellipse at 30% 35%, #463b75, #2a1f4e);
             box-shadow: 0 4px 0 #2a1b55;
-            color: #f3e6ff;
+            color: #ffffff;
         }
         body.dark .status-text {
             background: #1f1940aa;
-            color: #ffdfb3;
+            color: #ffffff;
+        }
+        body.dark .stat-row {
+            color: #ffffff;
         }
 
         body.light {
@@ -376,23 +398,26 @@
         body.neon .input-field {
             background: #1f1140;
             border-color: #ff66ff;
-            color: #ffe6ff;
+            color: #ffffff;
         }
         body.neon .option-btn {
             background: #3b1b66cc;
             border-color: #ff88ff;
-            color: #ffe6ff;
+            color: #ffffff;
         }
         body.neon .cell {
             background: radial-gradient(ellipse at 30% 35%, #6a2e8a, #3a1a60);
             box-shadow: 0 4px 0 #ff44e6;
             border-color: #ff88ff;
-            color: #ffebff;
+            color: #ffffff;
         }
         body.neon .status-text {
             background: #1a0e30aa;
-            color: #ffc4ff;
+            color: #ffffff;
             border: 1px solid #ff44e6;
+        }
+        body.neon .stat-row {
+            color: #ffffff;
         }
 
         body.mint {
@@ -484,7 +509,7 @@
     const BOARD_SIZE = 6;
     const TOTAL_CELLS = 36;
 
-    let currentWin = 0;           // выигрыш в текущей активной игре
+    let currentWin = 0;
     let rewardPerCell = 10;
     let selectedMines = 5;
     let gameActive = false;
@@ -548,7 +573,6 @@
                         cellDiv.classList.add('mine-reveal');
                         cellDiv.innerText = '💣';
                     } else {
-                        // показываем сумму выигрыша за эту ячейку (в рублях)
                         cellDiv.innerText = `${rewardPerCell}₽`;
                     }
                 } else {
@@ -562,6 +586,18 @@
         }
     }
 
+    // Подсветка ячейки зелёным на 0.5 секунды
+    function highlightCell(row, col) {
+        const index = row * BOARD_SIZE + col;
+        const cellDiv = gridContainer.children[index];
+        if (cellDiv) {
+            cellDiv.classList.add('highlight');
+            setTimeout(() => {
+                cellDiv.classList.remove('highlight');
+            }, 400);
+        }
+    }
+
     function revealAllMines() {
         for (let i = 0; i < BOARD_SIZE; i++)
             for (let j = 0; j < BOARD_SIZE; j++)
@@ -569,7 +605,6 @@
         renderGrid();
     }
 
-    // Анимация тряски поля
     function shakeGrid() {
         gridContainer.classList.add('shake');
         setTimeout(() => {
@@ -580,7 +615,7 @@
     function loseGame() {
         if (!gameActive) return;
         gameActive = false;
-        shakeGrid(); // анимация взрыва
+        shakeGrid();
         revealAllMines();
         gameStatusSpan.innerText = `💥 ВЗРЫВ! Вы наступили на мину. Потеряно ${currentWin.toFixed(2)} ₽`;
         currentWin = 0;
@@ -601,134 +636,143 @@
             return;
         }
         gameActive = false;
-        // Показать все неоткрытые клетки
         for (let i = 0; i < BOARD_SIZE; i++)
             for (let j = 0; j < BOARD_SIZE; j++)
                 if (!board[i][j].revealed) board[i][j].revealed = true;
         renderGrid();
     }
 
-    // ---------- РУЛЕТКА С КОЛЕСОМ (canvas) ----------
-    let rouletteAnimation = null;
-    function showRouletteWheel(callback) {
+    // ---------- РУЛЕТКА С КОЛЕСОМ И КНОПКОЙ "КРУТИТЬ" ----------
+    let currentRouletteCallback = null;
+    let rouletteCanvas = null;
+    let rouletteCtx = null;
+    let rouletteSpinning = false;
+    let rouletteAnimationId = null;
+    let rouletteCurrentAngle = 0;
+    let rouletteResult = null;
+
+    const sectors = [
+        { label: 'x2',   color: '#4CAF50', value: 'win' },
+        { label: '0',    color: '#F44336', value: 'lose' }
+    ];
+    const sectorAngle = (Math.PI * 2) / sectors.length;
+
+    function drawRouletteWheel(angle) {
+        if (!rouletteCtx) return;
+        const canvas = rouletteCanvas;
+        const ctx = rouletteCtx;
+        const centerX = canvas.width/2;
+        const centerY = canvas.height/2;
+        const radius = 140;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < sectors.length; i++) {
+            const start = angle + i * sectorAngle;
+            const end = start + sectorAngle;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, start, end);
+            ctx.lineTo(centerX, centerY);
+            ctx.fillStyle = sectors[i].color;
+            ctx.fill();
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(start + sectorAngle/2);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px "Orbitron"';
+            ctx.shadowBlur = 0;
+            ctx.fillText(sectors[i].label, radius - 45, 10);
+            ctx.restore();
+        }
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 20, 0, 2*Math.PI);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(centerX + 10, centerY - radius - 5);
+        ctx.lineTo(centerX - 10, centerY - radius - 5);
+        ctx.lineTo(centerX, centerY - radius - 18);
+        ctx.fillStyle = '#ffd700';
+        ctx.fill();
+    }
+
+    function startRouletteSpin(callback) {
+        if (rouletteSpinning) return;
+        rouletteSpinning = true;
+        const randomFullRotations = 5 + Math.random() * 5;
+        const totalAngleBase = randomFullRotations * 2 * Math.PI;
+        const resultIndex = Math.random() < 0.5 ? 0 : 1;
+        const finalWin = (sectors[resultIndex].value === 'win');
+        const targetSectorCenter = (resultIndex * sectorAngle) + sectorAngle/2;
+        let startAngle = rouletteCurrentAngle;
+        let finalTotalAngle = totalAngleBase;
+        let currentRotation = startAngle;
+        const startTime = performance.now();
+        const spinDuration = 1500;
+
+        function animate(now) {
+            const elapsed = now - startTime;
+            let t = Math.min(1, elapsed / spinDuration);
+            const ease = 1 - Math.pow(1 - t, 3);
+            const rotation = startAngle + finalTotalAngle * ease;
+            drawRouletteWheel(rotation);
+            if (t < 1) {
+                rouletteAnimationId = requestAnimationFrame(animate);
+            } else {
+                // корректируем финальный угол, чтобы стрелка указывала на нужный сектор
+                let finalAngle = (startAngle + finalTotalAngle) % (2*Math.PI);
+                let correction = (targetSectorCenter - finalAngle + 2*Math.PI) % (2*Math.PI);
+                if (correction > Math.PI) correction -= 2*Math.PI;
+                const correctedAngle = startAngle + finalTotalAngle + correction;
+                drawRouletteWheel(correctedAngle);
+                rouletteCurrentAngle = correctedAngle % (2*Math.PI);
+                rouletteSpinning = false;
+                cancelAnimationFrame(rouletteAnimationId);
+                setTimeout(() => {
+                    callback(finalWin);
+                }, 200);
+            }
+        }
+        rouletteAnimationId = requestAnimationFrame(animate);
+    }
+
+    function showRouletteWheelWithButton(callback) {
         const overlay = document.createElement('div');
         overlay.className = 'roulette-overlay';
         const canvas = document.createElement('canvas');
         canvas.width = 300;
         canvas.height = 300;
-        const ctx = canvas.getContext('2d');
+        rouletteCanvas = canvas;
+        rouletteCtx = canvas.getContext('2d');
+        drawRouletteWheel(0);
         
-        const sectors = [
-            { label: 'x2',   color: '#4CAF50', value: 'win' },
-            { label: '0',    color: '#F44336', value: 'lose' }
-        ];
-        const sectorAngle = (Math.PI * 2) / sectors.length;
-        
-        let currentAngle = 0;
-        let spinning = false;
-        let spinStart = 0;
-        let spinDuration = 1500;
-        let targetStopAngle = 0;
-        let animationId = null;
-        let finalResult = null;
-
-        function drawWheel(angle) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const centerX = canvas.width/2;
-            const centerY = canvas.height/2;
-            const radius = 140;
-            for (let i = 0; i < sectors.length; i++) {
-                const start = angle + i * sectorAngle;
-                const end = start + sectorAngle;
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, start, end);
-                ctx.lineTo(centerX, centerY);
-                ctx.fillStyle = sectors[i].color;
-                ctx.fill();
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                ctx.rotate(start + sectorAngle/2);
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 24px "Orbitron"';
-                ctx.shadowBlur = 0;
-                ctx.fillText(sectors[i].label, radius - 45, 10);
-                ctx.restore();
-            }
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 20, 0, 2*Math.PI);
-            ctx.fillStyle = '#333';
-            ctx.fill();
-            ctx.strokeStyle = '#ffd700';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            // стрелка
-            ctx.beginPath();
-            ctx.moveTo(centerX + 10, centerY - radius - 5);
-            ctx.lineTo(centerX - 10, centerY - radius - 5);
-            ctx.lineTo(centerX, centerY - radius - 18);
-            ctx.fillStyle = '#ffd700';
-            ctx.fill();
-        }
-
-        function spinWheel() {
-            if (spinning) return;
-            spinning = true;
-            const randomFullRotations = 5 + Math.random() * 5;
-            const totalAngle = randomFullRotations * 2 * Math.PI;
-            // определяем случайный сектор (победа или поражение)
-            const resultIndex = Math.random() < 0.5 ? 0 : 1; // win (x2) или lose (0)
-            finalResult = (sectors[resultIndex].value === 'win');
-            // вычисляем угол, на котором должен остановиться выбранный сектор (чтобы стрелка указывала на центр сектора)
-            const targetSectorCenter = (resultIndex * sectorAngle) + sectorAngle/2;
-            // текущий угол вращения: angle = startAngle + offset
-            // нужно, чтобы (startAngle + totalAngle) % (2PI) = targetSectorCenter
-            let startAngle = currentAngle;
-            let finalAngle = (startAngle + totalAngle) % (2*Math.PI);
-            let correction = (targetSectorCenter - finalAngle + 2*Math.PI) % (2*Math.PI);
-            if (correction > Math.PI) correction -= 2*Math.PI;
-            const finalTotalAngle = totalAngle + correction;
-            const startTime = performance.now();
-            
-            function animate(now) {
-                const elapsed = now - startTime;
-                let t = Math.min(1, elapsed / spinDuration);
-                // easeOutCubic
-                const ease = 1 - Math.pow(1 - t, 3);
-                const currentRotation = startAngle + finalTotalAngle * ease;
-                drawWheel(currentRotation);
-                if (t < 1) {
-                    animationId = requestAnimationFrame(animate);
-                } else {
-                    drawWheel(startAngle + finalTotalAngle);
-                    spinning = false;
-                    cancelAnimationFrame(animationId);
-                    setTimeout(() => {
-                        callback(finalResult);
-                        overlay.remove();
-                    }, 300);
-                }
-            }
-            animationId = requestAnimationFrame(animate);
-        }
-
         const card = document.createElement('div');
         card.className = 'roulette-card';
         card.innerHTML = `<h3>🎡 КОЛЕСО ФОРТУНЫ 🎡</h3>`;
         card.appendChild(canvas);
+        const spinBtn = document.createElement('button');
+        spinBtn.innerText = 'КРУТИТЬ';
+        spinBtn.className = 'spin-roulette-btn';
         const closeBtn = document.createElement('button');
         closeBtn.innerText = 'ЗАКРЫТЬ';
         closeBtn.className = 'close-roulette';
-        closeBtn.onclick = () => {
-            if (spinning) return;
-            overlay.remove();
-            if (animationId) cancelAnimationFrame(animationId);
+        
+        spinBtn.onclick = () => {
+            if (rouletteSpinning) return;
+            startRouletteSpin((result) => {
+                callback(result);
+                overlay.remove();
+            });
         };
+        closeBtn.onclick = () => {
+            if (rouletteSpinning) return;
+            overlay.remove();
+        };
+        card.appendChild(spinBtn);
         card.appendChild(closeBtn);
         overlay.appendChild(card);
         document.body.appendChild(overlay);
-        
-        drawWheel(0);
-        spinWheel();
     }
 
     function doubleOrNothing() {
@@ -740,7 +784,7 @@
             gameStatusSpan.innerText = '❌ Нечего удваивать. Откройте ячейки.';
             return;
         }
-        showRouletteWheel((isWin) => {
+        showRouletteWheelWithButton((isWin) => {
             if (isWin) {
                 currentWin = currentWin * 2;
                 updateUI();
@@ -756,6 +800,7 @@
         });
     }
 
+    // Клик по ячейке с подсветкой
     function onCellClick(row, col) {
         if (!gameActive) return;
         const cell = board[row][col];
@@ -766,6 +811,9 @@
             return;
         }
 
+        // безопасная ячейка — подсветка зелёным
+        highlightCell(row, col);
+        
         cell.revealed = true;
         openedSafeCount++;
         currentWin += rewardPerCell;
@@ -810,7 +858,6 @@
         gameStatusSpan.innerText = `🎲 НОВАЯ ИГРА! Мин: ${selectedMines}, награда: ${rewardPerCell} ₽ за ячейку. Открывайте!`;
     }
 
-    // Управление темами
     function setTheme(theme) {
         document.body.className = theme;
     }
