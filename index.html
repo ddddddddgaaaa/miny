@@ -12,83 +12,7 @@
             user-select: none;
         }
 
-        /* ----- СВЕТЛАЯ ТЕМА (по умолчанию) ----- */
-        body.light {
-            background: linear-gradient(145deg, #cbc3e6, #b5a9d4);
-        }
-        body.light .game-container {
-            background: rgba(220, 210, 250, 0.85);
-            border-color: #9c7ad3;
-        }
-        body.light .panel-card {
-            background: #ede4ffdd;
-            border-color: #b48aff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-        body.light .menu-label {
-            color: #4a2f8a;
-        }
-        body.light .input-field {
-            background: #ffffffcc;
-            border-color: #9b6eff;
-            color: #2d1b5e;
-        }
-        body.light .option-btn {
-            background: linear-gradient(135deg, #cbb2ff, #aa88ff);
-            border-color: #7b4bda;
-            color: #2a164f;
-        }
-        body.light .cell {
-            background: radial-gradient(ellipse at 30% 35%, #d9caff, #b79cf0);
-            box-shadow: 0 6px 0 #7c5eb3;
-            color: #2f1b57;
-        }
-        body.light .status-text {
-            background: #e2d6ffaa;
-            color: #3a2570;
-        }
-        body.light .stat-row {
-            background: #d9ccffaa;
-        }
-
-        /* ----- ТЁМНАЯ ТЕМА (футуристик) ----- */
-        body.dark {
-            background: linear-gradient(145deg, #1e1a3a, #2a2448);
-        }
-        body.dark .game-container {
-            background: rgba(45, 35, 75, 0.75);
-            border-color: #bf9eff;
-        }
-        body.dark .panel-card {
-            background: #2d2350dd;
-            border-color: #bf9eff;
-        }
-        body.dark .menu-label {
-            color: #e2d1ff;
-        }
-        body.dark .input-field {
-            background: #1f1940;
-            border-color: #b77eff;
-            color: #f0eaff;
-        }
-        body.dark .option-btn {
-            background: linear-gradient(135deg, #3a2b60, #231b44);
-            border-color: #c49eff;
-            color: #f0eaff;
-        }
-        body.dark .cell {
-            background: radial-gradient(ellipse at 30% 35%, #463b75, #2a1f4e);
-            box-shadow: 0 6px 0 #2a1b55;
-            color: #f3e6ff;
-        }
-        body.dark .status-text {
-            background: #1f1940aa;
-            color: #ffdfb3;
-        }
-        body.dark .stat-row {
-            background: #1f1940aa;
-        }
-
+        /* ----- ОБЩИЕ СТИЛИ ----- */
         body {
             transition: background 0.3s, color 0.2s;
             min-height: 100vh;
@@ -161,6 +85,13 @@
             border: 1px solid;
         }
 
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
         .option-btn {
             font-family: 'Orbitron', monospace;
             font-weight: bold;
@@ -171,6 +102,7 @@
             transition: all 0.2s ease;
             text-align: center;
             border: 1px solid;
+            background: rgba(0,0,0,0.2);
         }
 
         .option-btn:hover:not(:disabled) {
@@ -187,30 +119,23 @@
             color: #fff0f5;
             text-shadow: 0 0 5px #ff0095;
             box-shadow: 0 0 12px #ff5e8e;
-            width: 100%;
         }
 
         .cashout-btn {
             background: radial-gradient(circle at 30% 10%, #2ee68a, #0e8248);
             border: none;
             font-size: 1.1rem;
-            font-weight: bold;
-            width: 100%;
         }
 
         .double-btn {
             background: radial-gradient(circle at 30% 10%, #ffb347, #d4650a);
             border: none;
             font-size: 1.1rem;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 10px;
         }
 
         .theme-btn {
             background: linear-gradient(135deg, #7f6bc2, #5e43a3);
             border: 1px solid #e5ccff;
-            margin-top: 12px;
         }
 
         .stats-grid {
@@ -226,6 +151,7 @@
             padding: 12px 18px;
             border-radius: 40px;
             flex-wrap: wrap;
+            background: rgba(0,0,0,0.2);
         }
 
         .balance-value, .win-value {
@@ -246,7 +172,7 @@
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             aspect-ratio: 6 / 5;
-            gap: 12px;
+            gap: 10px;
             background: rgba(0, 0, 0, 0.2);
             padding: 18px;
             border-radius: 48px;
@@ -255,16 +181,18 @@
         }
 
         .cell {
-            border-radius: 18px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
             transition: 0.1s linear;
             border: 1px solid #c7a5ff;
-            text-shadow: 0 0 5px #b77eff;
+            text-shadow: 0 0 3px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(2px);
         }
 
         .cell.revealed {
@@ -283,6 +211,7 @@
             margin-top: 12px;
             padding: 10px;
             border-radius: 28px;
+            background: rgba(0,0,0,0.3);
         }
 
         button:disabled {
@@ -298,7 +227,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
@@ -307,13 +236,14 @@
             font-family: 'Orbitron', monospace;
         }
         .roulette-card {
-            background: #2a1f4e;
             border-radius: 48px;
             padding: 30px;
             text-align: center;
             border: 2px solid gold;
             box-shadow: 0 0 40px rgba(255,215,0,0.5);
-            width: 300px;
+            width: 320px;
+            background: #1e1a3a;
+            color: white;
         }
         .roulette-spin {
             font-size: 4rem;
@@ -336,12 +266,165 @@
             font-weight: bold;
             margin-top: 15px;
             cursor: pointer;
+            color: black;
         }
 
         @media (max-width: 850px) {
             .game-container { flex-direction: column; }
-            .grid { gap: 8px; padding: 12px; }
-            .cell { font-size: 1.3rem; }
+            .grid { gap: 6px; padding: 12px; }
+            .cell { font-size: 0.9rem; }
+        }
+
+        /* ----- ТЕМЫ (4 варианта) ----- */
+        /* 1. Тёмная (dark) */
+        body.dark {
+            background: linear-gradient(145deg, #1e1a3a, #2a2448);
+        }
+        body.dark .game-container {
+            background: rgba(45, 35, 75, 0.75);
+            border-color: #bf9eff;
+        }
+        body.dark .panel-card {
+            background: #2d2350dd;
+            border-color: #bf9eff;
+        }
+        body.dark .menu-label {
+            color: #e2d1ff;
+        }
+        body.dark .input-field {
+            background: #1f1940;
+            border-color: #b77eff;
+            color: #f0eaff;
+        }
+        body.dark .option-btn {
+            background: #3a2b60cc;
+            border-color: #c49eff;
+            color: #f0eaff;
+        }
+        body.dark .cell {
+            background: radial-gradient(ellipse at 30% 35%, #463b75, #2a1f4e);
+            box-shadow: 0 4px 0 #2a1b55;
+            color: #f3e6ff;
+        }
+        body.dark .status-text {
+            background: #1f1940aa;
+            color: #ffdfb3;
+        }
+
+        /* 2. Светлая (light) */
+        body.light {
+            background: linear-gradient(145deg, #e6e0f5, #d9cef0);
+        }
+        body.light .game-container {
+            background: #f5efffdd;
+            border-color: #b48aff;
+        }
+        body.light .panel-card {
+            background: #faf5ffdd;
+            border-color: #b48aff;
+        }
+        body.light .menu-label {
+            color: #4a2f8a;
+        }
+        body.light .input-field {
+            background: #ffffffcc;
+            border-color: #9b6eff;
+            color: #2d1b5e;
+        }
+        body.light .option-btn {
+            background: #d9caffcc;
+            border-color: #8c6ad6;
+            color: #2d1b5e;
+        }
+        body.light .cell {
+            background: radial-gradient(ellipse at 30% 35%, #f0e9ff, #d9caff);
+            box-shadow: 0 4px 0 #9f86d6;
+            color: #2f1b57;
+        }
+        body.light .status-text {
+            background: #e2d6ffaa;
+            color: #3a2570;
+        }
+
+        /* 3. Неоновая (neon) — фиолетово-розовый неон */
+        body.neon {
+            background: linear-gradient(145deg, #0a0f2a, #0b0a20);
+        }
+        body.neon .game-container {
+            background: #0f0c26cc;
+            border-color: #ff44e6;
+            box-shadow: 0 0 15px #ff44e6;
+        }
+        body.neon .panel-card {
+            background: #1a0e30cc;
+            border-color: #ff44e6;
+        }
+        body.neon .menu-label {
+            color: #ffb3ff;
+            text-shadow: 0 0 3px #ff44e6;
+        }
+        body.neon .input-field {
+            background: #1f1140;
+            border-color: #ff66ff;
+            color: #ffdbff;
+        }
+        body.neon .option-btn {
+            background: #3b1b66cc;
+            border-color: #ff88ff;
+            color: #ffe6ff;
+        }
+        body.neon .cell {
+            background: radial-gradient(ellipse at 30% 35%, #6a2e8a, #3a1a60);
+            box-shadow: 0 4px 0 #ff44e6;
+            border-color: #ff88ff;
+            color: #ffebff;
+        }
+        body.neon .status-text {
+            background: #1a0e30aa;
+            color: #ffc4ff;
+            border: 1px solid #ff44e6;
+        }
+        body.neon .stat-row {
+            background: #1a0e30aa;
+        }
+
+        /* 4. Мятная (mint) — свежая зелёно-голубая */
+        body.mint {
+            background: linear-gradient(145deg, #b8f2e6, #9fe0d9);
+        }
+        body.mint .game-container {
+            background: #c4f2ead9;
+            border-color: #2baa8f;
+        }
+        body.mint .panel-card {
+            background: #dcfff7dd;
+            border-color: #2baa8f;
+        }
+        body.mint .menu-label {
+            color: #1b6b5c;
+        }
+        body.mint .input-field {
+            background: #ffffffcc;
+            border-color: #2baa8f;
+            color: #1e5a4f;
+        }
+        body.mint .option-btn {
+            background: #b2e6dbcc;
+            border-color: #2baa8f;
+            color: #1b5c4f;
+        }
+        body.mint .cell {
+            background: radial-gradient(ellipse at 30% 35%, #c5fff0, #a3f0e0);
+            box-shadow: 0 4px 0 #2baa8f;
+            color: #1b5a4c;
+            border-color: #3ecfb0;
+        }
+        body.mint .status-text {
+            background: #d4fff5aa;
+            color: #1a6b5c;
+        }
+        body.mint .stat-row {
+            background: #d4fff5aa;
         }
     </style>
 </head>
@@ -357,10 +440,17 @@
                 <div class="menu-label">💰 НАГРАДА ЗА ЯЧЕЙКУ (₽)</div>
                 <input type="number" id="rewardInput" class="input-field" min="1" step="1" value="10">
             </div>
-            <button id="startGameBtn" class="option-btn play-btn">🎮 НОВАЯ ИГРА</button>
-            <button id="cashoutBtn" class="option-btn cashout-btn" disabled>💎 ЗАБРАТЬ ВЫИГРЫШ</button>
-            <button id="doubleBtn" class="option-btn double-btn" disabled>🎲 РУЛЕТКА x2 (50/50)</button>
-            <button id="themeToggle" class="option-btn theme-btn">🌓 СМЕНИТЬ ТЕМУ</button>
+            <div class="button-group">
+                <button id="startGameBtn" class="option-btn play-btn">🎮 НОВАЯ ИГРА</button>
+                <button id="cashoutBtn" class="option-btn cashout-btn" disabled>💎 ЗАБРАТЬ</button>
+                <button id="doubleBtn" class="option-btn double-btn" disabled>🎲 РУЛЕТКА x2</button>
+            </div>
+            <div class="button-group">
+                <button id="themeDark" class="option-btn theme-btn">🌑 Тёмная</button>
+                <button id="themeLight" class="option-btn theme-btn">☀️ Светлая</button>
+                <button id="themeNeon" class="option-btn theme-btn">💜 Неон</button>
+                <button id="themeMint" class="option-btn theme-btn">🍃 Мятная</button>
+            </div>
         </div>
 
         <div class="panel-card stats-grid">
@@ -417,15 +507,13 @@
     const minesInput = document.getElementById('minesInput');
     const rewardInput = document.getElementById('rewardInput');
     const gridContainer = document.getElementById('mineGrid');
-    const themeToggle = document.getElementById('themeToggle');
 
-    // Обновление интерфейса
+    // Обновление UI
     function updateUI() {
         balanceSpan.innerText = balance.toFixed(2);
         currentWinSpan.innerText = currentWin.toFixed(2);
         openedSafeDisplay.innerText = openedSafeCount;
         totalSafeDisplaySpan.innerText = totalSafeCells;
-        // управление кнопками
         if (gameActive) {
             cashoutBtn.disabled = (currentWin <= 0);
             doubleBtn.disabled = (currentWin <= 0);
@@ -452,11 +540,13 @@
         return newBoard;
     }
 
+    // Отобразить поле с номерами ячеек (1-36)
     function renderGrid() {
         gridContainer.innerHTML = '';
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
                 const cell = board[i][j];
+                const cellNum = i * BOARD_SIZE + j + 1;
                 const cellDiv = document.createElement('div');
                 cellDiv.classList.add('cell');
                 if (cell.revealed) {
@@ -468,7 +558,7 @@
                         cellDiv.innerText = '💎';
                     }
                 } else {
-                    cellDiv.innerText = '?';
+                    cellDiv.innerText = cellNum;
                 }
                 cellDiv.addEventListener('click', (function(row, col) {
                     return () => onCellClick(row, col);
@@ -485,19 +575,15 @@
         renderGrid();
     }
 
-    // Поражение (мина)
     function loseGame() {
         if (!gameActive) return;
         gameActive = false;
         revealAllMines();
-        gameStatusSpan.innerText = `💥 ВЗРЫВ! Вы наступили на мину. Текущий выигрыш (${currentWin.toFixed(2)} ₽) потерян. Начните новую игру.`;
+        gameStatusSpan.innerText = `💥 ВЗРЫВ! Вы наступили на мину. Текущий выигрыш (${currentWin.toFixed(2)} ₽) потерян.`;
         currentWin = 0;
         updateUI();
-        cashoutBtn.disabled = true;
-        doubleBtn.disabled = true;
     }
 
-    // Забрать выигрыш → добавить к балансу
     function cashout() {
         if (!gameActive) {
             gameStatusSpan.innerText = '❌ Нет активной игры. Начните новый раунд.';
@@ -510,20 +596,18 @@
             currentWin = 0;
             updateUI();
         } else {
-            gameStatusSpan.innerText = '❌ Нечего забирать. Откройте хотя бы одну ячейку.';
+            gameStatusSpan.innerText = '❌ Нечего забирать.';
             return;
         }
         gameActive = false;
-        // Показать все неоткрытые клетки (для наглядности)
+        // Показать все неоткрытые клетки
         for (let i = 0; i < BOARD_SIZE; i++)
             for (let j = 0; j < BOARD_SIZE; j++)
                 if (!board[i][j].revealed) board[i][j].revealed = true;
         renderGrid();
-        cashoutBtn.disabled = true;
-        doubleBtn.disabled = true;
     }
 
-    // Визуальная рулетка 50/50 (как в поинт ауке)
+    // Визуальная рулетка 50/50
     function showRoulette(callback) {
         const overlay = document.createElement('div');
         overlay.className = 'roulette-overlay';
@@ -563,7 +647,6 @@
         };
     }
 
-    // Удвоение через рулетку
     function doubleOrNothing() {
         if (!gameActive) {
             gameStatusSpan.innerText = '❌ Игра не активна.';
@@ -573,27 +656,22 @@
             gameStatusSpan.innerText = '❌ Нечего удваивать. Откройте ячейки.';
             return;
         }
-
         showRoulette((isWin) => {
             if (isWin) {
                 currentWin = currentWin * 2;
                 updateUI();
-                gameStatusSpan.innerText = `🎉 УДАЧА! Выигрыш удвоен! Теперь он составляет ${currentWin.toFixed(2)} ₽. Можно забрать или рискнуть ещё.`;
-                // игра остаётся активной, можно продолжать открывать ячейки или снова удваивать
+                gameStatusSpan.innerText = `🎉 УДАЧА! Выигрыш удвоен! Теперь он составляет ${currentWin.toFixed(2)} ₽.`;
             } else {
                 gameStatusSpan.innerText = `💔 Неудача! Весь текущий выигрыш (${currentWin.toFixed(2)} ₽) потерян. Раунд окончен.`;
                 currentWin = 0;
                 updateUI();
                 gameActive = false;
-                cashoutBtn.disabled = true;
-                doubleBtn.disabled = true;
-                revealAllMines(); // показываем все мины
+                revealAllMines();
                 renderGrid();
             }
         });
     }
 
-    // Клик по ячейке
     function onCellClick(row, col) {
         if (!gameActive) return;
         const cell = board[row][col];
@@ -604,7 +682,6 @@
             return;
         }
 
-        // безопасная ячейка
         cell.revealed = true;
         openedSafeCount++;
         currentWin += rewardPerCell;
@@ -612,18 +689,16 @@
         renderGrid();
 
         if (openedSafeCount === totalSafeCells) {
-            gameStatusSpan.innerText = `✨ ПОБЕДА! Вы открыли все безопасные ячейки! Выигрыш: ${currentWin.toFixed(2)} ₽. Заберите или удвойте. ✨`;
+            gameStatusSpan.innerText = `✨ ПОБЕДА! Все безопасные ячейки открыты! Выигрыш: ${currentWin.toFixed(2)} ₽. Заберите или удвойте. ✨`;
             cashoutBtn.disabled = false;
             doubleBtn.disabled = false;
             return;
         }
-
         gameStatusSpan.innerText = `💎 Ячейка открыта! +${rewardPerCell} ₽. Выигрыш: ${currentWin.toFixed(2)} ₽.`;
         cashoutBtn.disabled = false;
         doubleBtn.disabled = false;
     }
 
-    // Новая игра
     function startNewGame() {
         let newMines = parseInt(minesInput.value);
         if (isNaN(newMines)) newMines = 5;
@@ -636,15 +711,8 @@
         rewardInput.value = newReward;
         rewardPerCell = newReward;
 
-        // Сброс состояния игры (баланс НЕ обнуляется, он накопленный)
-        // Пользователь просил "баланс сделай 0 и обновляй его после каждой новой игры" — 
-        // мы сделали: баланс отдельный, при новой игре баланс не трогаем, но если нужно обнулять баланс — раскомментировать строку ниже.
-        // По логике "обновляй его после каждой новой игры" — скорее всего хочет, чтобы баланс был только текущий выигрыш.
-        // Но для точного соответствия: сделаем, что при нажатии "НОВАЯ ИГРА" общий баланс не сбрасывается, 
-        // а текущий выигрыш сбрасывается. Однако пользователь явно сказал "баланс сделай 0" — выполним: обнуляем общий баланс при старте новой игры.
-        // Это реализует требование: баланс = 0 и обновляется после каждой игры (т.е. после игры вы можете его пополнить, а новая игра снова обнуляет баланс).
+        // Обнуляем общий баланс при каждой новой игре (по просьбе пользователя)
         balance = 0;
-        
         gameActive = true;
         openedSafeCount = 0;
         currentWin = 0;
@@ -660,19 +728,9 @@
         gameStatusSpan.innerText = `🎲 НОВАЯ ИГРА! Мин: ${selectedMines}, награда: ${rewardPerCell} ₽ за ячейку. Открывайте!`;
     }
 
-    // Переключение тем
-    let currentTheme = 'dark';
-    function toggleTheme() {
-        const body = document.body;
-        if (currentTheme === 'dark') {
-            body.classList.remove('dark');
-            body.classList.add('light');
-            currentTheme = 'light';
-        } else {
-            body.classList.remove('light');
-            body.classList.add('dark');
-            currentTheme = 'dark';
-        }
+    // Управление темами
+    function setTheme(theme) {
+        document.body.className = theme;
     }
 
     // Инициализация событий
@@ -683,7 +741,10 @@
         });
         cashoutBtn.addEventListener('click', cashout);
         doubleBtn.addEventListener('click', doubleOrNothing);
-        themeToggle.addEventListener('click', toggleTheme);
+        document.getElementById('themeDark').addEventListener('click', () => setTheme('dark'));
+        document.getElementById('themeLight').addEventListener('click', () => setTheme('light'));
+        document.getElementById('themeNeon').addEventListener('click', () => setTheme('neon'));
+        document.getElementById('themeMint').addEventListener('click', () => setTheme('mint'));
         minesInput.addEventListener('change', () => {
             if (gameActive) gameStatusSpan.innerText = '⚠️ Не меняйте мины во время игры. Начните новый раунд.';
         });
@@ -692,7 +753,6 @@
         });
     }
 
-    // Первоначальная инициализация
     function init() {
         bindEvents();
         balance = 0;
@@ -708,7 +768,8 @@
         minesCountDisplay.innerText = selectedMines;
         minesInput.value = selectedMines;
         rewardInput.value = rewardPerCell;
-        gameStatusSpan.innerText = '⚡ Баланс 0. Настрой игру и нажми "НОВАЯ ИГРА"';
+        gameStatusSpan.innerText = '⚡ Баланс 0. Выберите тему, настройте игру и нажмите "НОВАЯ ИГРА"';
+        setTheme('dark');
     }
 
     init();
