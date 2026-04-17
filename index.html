@@ -206,12 +206,13 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.1s ease;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             border: 1px solid #c7a5ff;
             text-shadow: 0 0 3px rgba(0,0,0,0.3);
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(2px);
             aspect-ratio: 1 / 1;
+            transform: scale(1);
         }
 
         .cell.revealed {
@@ -224,18 +225,38 @@
             box-shadow: inset 0 0 15px #ff5e8e;
         }
 
-        /* Плавное мигание зелёным */
+        /* ---------- НОВАЯ ПЛАВНАЯ АНИМАЦИЯ ЗЕЛЁНОГО СВЕЧЕНИЯ ---------- */
         .cell.highlight {
-            animation: greenBlink 0.5s ease-in-out 2;
-            background: #4caf50 !important;
-            box-shadow: 0 0 20px #4caf50 !important;
-            color: white !important;
+            animation: gentleGreenGlow 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            transform: scale(0.98);
         }
 
-        @keyframes greenBlink {
-            0% { background: rgba(76, 175, 80, 0.3); box-shadow: 0 0 0px #4caf50; }
-            50% { background: #4caf50; box-shadow: 0 0 20px #4caf50; }
-            100% { background: rgba(76, 175, 80, 0.3); box-shadow: 0 0 0px #4caf50; }
+        @keyframes gentleGreenGlow {
+            0% {
+                background: rgba(76, 175, 80, 0.2);
+                box-shadow: 0 0 0px #4caf50;
+                transform: scale(1);
+            }
+            25% {
+                background: #4caf50;
+                box-shadow: 0 0 18px #8bc34a, 0 0 8px #4caf50;
+                transform: scale(0.96);
+            }
+            50% {
+                background: #66bb6a;
+                box-shadow: 0 0 28px #7cb342, 0 0 12px #4caf50;
+                transform: scale(0.98);
+            }
+            75% {
+                background: #81c784;
+                box-shadow: 0 0 18px #8bc34a;
+                transform: scale(0.97);
+            }
+            100% {
+                background: rgba(76, 175, 80, 0);
+                box-shadow: 0 0 0px #4caf50;
+                transform: scale(1);
+            }
         }
 
         .status-text {
@@ -585,15 +606,20 @@
         }
     }
 
-    // Плавное мигание зелёным
+    // Плавное мигание зелёным (улучшенная анимация)
     function highlightCell(row, col) {
         const index = row * BOARD_SIZE + col;
         const cellDiv = gridContainer.children[index];
         if (cellDiv) {
+            // Убираем предыдущую анимацию, если она была, чтобы перезапустить
+            cellDiv.classList.remove('highlight');
+            // Форсируем reflow для перезапуска анимации
+            void cellDiv.offsetWidth;
             cellDiv.classList.add('highlight');
+            // Через время анимации (0.8s) класс можно убрать, но он сам отыграет и не мешает
             setTimeout(() => {
-                cellDiv.classList.remove('highlight');
-            }, 500);
+                if (cellDiv) cellDiv.classList.remove('highlight');
+            }, 800);
         }
     }
 
@@ -698,22 +724,16 @@
 
     // Определяет, какой сектор находится строго вверху (направление -90°)
     function getSectorUnderPointer(angle) {
-        // Направление стрелки — вверх (угол -PI/2)
         const pointerAngle = -Math.PI / 2;
-        // Нормализуем угол колеса так, чтобы сектор 0 начинался с угла angle
-        // Нужно найти сектор, который содержит pointerAngle
-        let adjustedAngle = pointerAngle;
         for (let i = 0; i < sectors.length; i++) {
             let start = angle + i * sectorAngle;
             let end = start + sectorAngle;
-            // Приводим углы в диапазон [0, 2PI)
             let normStart = ((start % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
             let normEnd = ((end % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
-            let normPointer = ((adjustedAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+            let normPointer = ((pointerAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
             if (normStart < normEnd) {
                 if (normPointer >= normStart && normPointer < normEnd) return sectors[i];
             } else {
-                // Переход через 0
                 if (normPointer >= normStart || normPointer < normEnd) return sectors[i];
             }
         }
@@ -738,13 +758,11 @@
             if (t < 1) {
                 rouletteAnimationId = requestAnimationFrame(animate);
             } else {
-                // Остановка: фиксируем конечный угол
                 const finalAngle = (startAngle + totalAngleBase) % (2*Math.PI);
                 drawRouletteWheel(finalAngle);
                 rouletteCurrentAngle = finalAngle;
                 rouletteSpinning = false;
                 cancelAnimationFrame(rouletteAnimationId);
-                // Определяем сектор под стрелкой
                 const sector = getSectorUnderPointer(finalAngle);
                 const isWin = (sector.value === 'win');
                 setTimeout(() => {
@@ -818,7 +836,7 @@
         });
     }
 
-    // Клик по ячейке с подсветкой
+    // Клик по ячейке с плавной анимацией зелёного свечения
     function onCellClick(row, col) {
         if (!gameActive) return;
         const cell = board[row][col];
@@ -829,7 +847,7 @@
             return;
         }
 
-        // безопасная ячейка — подсветка зелёным
+        // ✅ Безопасная ячейка: запускаем плавную зелёную анимацию (0.8 сек с пульсацией)
         highlightCell(row, col);
         
         cell.revealed = true;
