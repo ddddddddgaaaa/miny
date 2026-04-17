@@ -206,7 +206,7 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.1s linear;
+            transition: all 0.1s ease;
             border: 1px solid #c7a5ff;
             text-shadow: 0 0 3px rgba(0,0,0,0.3);
             background: rgba(255,255,255,0.15);
@@ -224,13 +224,18 @@
             box-shadow: inset 0 0 15px #ff5e8e;
         }
 
-        /* Зелёная подсветка на пару секунд */
+        /* Плавное мигание зелёным */
         .cell.highlight {
+            animation: greenBlink 0.5s ease-in-out 2;
             background: #4caf50 !important;
             box-shadow: 0 0 20px #4caf50 !important;
-            transition: 0.1s;
             color: white !important;
-            text-shadow: none;
+        }
+
+        @keyframes greenBlink {
+            0% { background: rgba(76, 175, 80, 0.3); box-shadow: 0 0 0px #4caf50; }
+            50% { background: #4caf50; box-shadow: 0 0 20px #4caf50; }
+            100% { background: rgba(76, 175, 80, 0.3); box-shadow: 0 0 0px #4caf50; }
         }
 
         .status-text {
@@ -307,7 +312,7 @@
             .cell { font-size: 0.8rem; }
         }
 
-        /* ----- ТЕМЫ с улучшенной контрастностью (светлый текст в тёмных темах) ----- */
+        /* ----- ТЕМЫ с контрастным текстом ----- */
         body.dark {
             background: linear-gradient(145deg, #1e1a3a, #2a2448);
         }
@@ -319,13 +324,13 @@
             background: #2d2350dd;
             border-color: #bf9eff;
         }
-        body.dark .menu-label {
-            color: #e2d1ff;
+        body.dark .menu-label, body.dark .info-text, body.dark .stat-row {
+            color: #f0eaff;
         }
         body.dark .input-field {
             background: #1f1940;
             border-color: #b77eff;
-            color: #f0eaff;
+            color: #ffffff;
         }
         body.dark .option-btn {
             background: #3a2b60cc;
@@ -341,9 +346,6 @@
             background: #1f1940aa;
             color: #ffffff;
         }
-        body.dark .stat-row {
-            color: #ffffff;
-        }
 
         body.light {
             background: linear-gradient(145deg, #e6e0f5, #d9cef0);
@@ -356,7 +358,7 @@
             background: #faf5ffdd;
             border-color: #b48aff;
         }
-        body.light .menu-label {
+        body.light .menu-label, body.light .info-text {
             color: #2a1a5e;
         }
         body.light .input-field {
@@ -391,8 +393,8 @@
             background: #1a0e30cc;
             border-color: #ff44e6;
         }
-        body.neon .menu-label {
-            color: #ffccff;
+        body.neon .menu-label, body.neon .info-text, body.neon .stat-row {
+            color: #ffffff;
             text-shadow: 0 0 3px #ff44e6;
         }
         body.neon .input-field {
@@ -416,9 +418,6 @@
             color: #ffffff;
             border: 1px solid #ff44e6;
         }
-        body.neon .stat-row {
-            color: #ffffff;
-        }
 
         body.mint {
             background: linear-gradient(145deg, #b8f2e6, #9fe0d9);
@@ -431,7 +430,7 @@
             background: #dcfff7dd;
             border-color: #2baa8f;
         }
-        body.mint .menu-label {
+        body.mint .menu-label, body.mint .info-text {
             color: #1b5c4f;
         }
         body.mint .input-field {
@@ -586,7 +585,7 @@
         }
     }
 
-    // Подсветка ячейки зелёным на 0.5 секунды
+    // Плавное мигание зелёным
     function highlightCell(row, col) {
         const index = row * BOARD_SIZE + col;
         const cellDiv = gridContainer.children[index];
@@ -594,7 +593,7 @@
             cellDiv.classList.add('highlight');
             setTimeout(() => {
                 cellDiv.classList.remove('highlight');
-            }, 400);
+            }, 500);
         }
     }
 
@@ -642,14 +641,13 @@
         renderGrid();
     }
 
-    // ---------- РУЛЕТКА С КОЛЕСОМ И КНОПКОЙ "КРУТИТЬ" ----------
+    // ---------- РУЛЕТКА С ЧЕСТНЫМ ОПРЕДЕЛЕНИЕМ ПО СТРЕЛКЕ ----------
     let currentRouletteCallback = null;
     let rouletteCanvas = null;
     let rouletteCtx = null;
     let rouletteSpinning = false;
     let rouletteAnimationId = null;
     let rouletteCurrentAngle = 0;
-    let rouletteResult = null;
 
     const sectors = [
         { label: 'x2',   color: '#4CAF50', value: 'win' },
@@ -689,12 +687,37 @@
         ctx.strokeStyle = '#ffd700';
         ctx.lineWidth = 3;
         ctx.stroke();
+        // Стрелка (вверх)
         ctx.beginPath();
-        ctx.moveTo(centerX + 10, centerY - radius - 5);
-        ctx.lineTo(centerX - 10, centerY - radius - 5);
-        ctx.lineTo(centerX, centerY - radius - 18);
+        ctx.moveTo(centerX + 12, centerY - radius - 5);
+        ctx.lineTo(centerX - 12, centerY - radius - 5);
+        ctx.lineTo(centerX, centerY - radius - 22);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
+    }
+
+    // Определяет, какой сектор находится строго вверху (направление -90°)
+    function getSectorUnderPointer(angle) {
+        // Направление стрелки — вверх (угол -PI/2)
+        const pointerAngle = -Math.PI / 2;
+        // Нормализуем угол колеса так, чтобы сектор 0 начинался с угла angle
+        // Нужно найти сектор, который содержит pointerAngle
+        let adjustedAngle = pointerAngle;
+        for (let i = 0; i < sectors.length; i++) {
+            let start = angle + i * sectorAngle;
+            let end = start + sectorAngle;
+            // Приводим углы в диапазон [0, 2PI)
+            let normStart = ((start % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+            let normEnd = ((end % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+            let normPointer = ((adjustedAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+            if (normStart < normEnd) {
+                if (normPointer >= normStart && normPointer < normEnd) return sectors[i];
+            } else {
+                // Переход через 0
+                if (normPointer >= normStart || normPointer < normEnd) return sectors[i];
+            }
+        }
+        return sectors[0];
     }
 
     function startRouletteSpin(callback) {
@@ -702,35 +725,30 @@
         rouletteSpinning = true;
         const randomFullRotations = 5 + Math.random() * 5;
         const totalAngleBase = randomFullRotations * 2 * Math.PI;
-        const resultIndex = Math.random() < 0.5 ? 0 : 1;
-        const finalWin = (sectors[resultIndex].value === 'win');
-        const targetSectorCenter = (resultIndex * sectorAngle) + sectorAngle/2;
         let startAngle = rouletteCurrentAngle;
-        let finalTotalAngle = totalAngleBase;
-        let currentRotation = startAngle;
-        const startTime = performance.now();
         const spinDuration = 1500;
+        const startTime = performance.now();
 
         function animate(now) {
             const elapsed = now - startTime;
             let t = Math.min(1, elapsed / spinDuration);
             const ease = 1 - Math.pow(1 - t, 3);
-            const rotation = startAngle + finalTotalAngle * ease;
+            const rotation = startAngle + totalAngleBase * ease;
             drawRouletteWheel(rotation);
             if (t < 1) {
                 rouletteAnimationId = requestAnimationFrame(animate);
             } else {
-                // корректируем финальный угол, чтобы стрелка указывала на нужный сектор
-                let finalAngle = (startAngle + finalTotalAngle) % (2*Math.PI);
-                let correction = (targetSectorCenter - finalAngle + 2*Math.PI) % (2*Math.PI);
-                if (correction > Math.PI) correction -= 2*Math.PI;
-                const correctedAngle = startAngle + finalTotalAngle + correction;
-                drawRouletteWheel(correctedAngle);
-                rouletteCurrentAngle = correctedAngle % (2*Math.PI);
+                // Остановка: фиксируем конечный угол
+                const finalAngle = (startAngle + totalAngleBase) % (2*Math.PI);
+                drawRouletteWheel(finalAngle);
+                rouletteCurrentAngle = finalAngle;
                 rouletteSpinning = false;
                 cancelAnimationFrame(rouletteAnimationId);
+                // Определяем сектор под стрелкой
+                const sector = getSectorUnderPointer(finalAngle);
+                const isWin = (sector.value === 'win');
                 setTimeout(() => {
-                    callback(finalWin);
+                    callback(isWin);
                 }, 200);
             }
         }
@@ -745,7 +763,7 @@
         canvas.height = 300;
         rouletteCanvas = canvas;
         rouletteCtx = canvas.getContext('2d');
-        drawRouletteWheel(0);
+        drawRouletteWheel(rouletteCurrentAngle);
         
         const card = document.createElement('div');
         card.className = 'roulette-card';
