@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>未来矿场 | 命运雷区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0a1f, #03000c);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', 'Segoe UI', 'Courier New', monospace;
+            padding: 20px;
+        }
+
+        /* футуристический гейм-контейнер */
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(25, 5, 45, 0.65);
+            backdrop-filter: blur(3px);
+            border-radius: 48px;
+            padding: 24px 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(156, 80, 255, 0.4);
+        }
+
+        /* верхнее меню */
+        .menu-panel {
+            background: #0e011dd9;
+            border-radius: 32px;
+            padding: 18px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #a855f7;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .menu-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #1e0a2e80;
+            padding: 10px 18px;
+            border-radius: 28px;
+            backdrop-filter: blur(4px);
+        }
+
+        .menu-label {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: #cdb4ff;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #2e0a4a, #16032a);
+            border: 1px solid #b77eff;
+            color: #f0eaff;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 6px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .option-btn.active {
+            background: linear-gradient(135deg, #9b4dff, #5e1bc2);
+            border-color: #f0b3ff;
+            box-shadow: 0 0 10px #bf6eff;
+            color: white;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #7a2be0;
+            border-color: #e2aaff;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(0.1);
+        }
+
+        .play-btn {
+            background: radial-gradient(circle at 30% 10%, #ff3c7e, #b0105a);
+            border: none;
+            padding: 10px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffe6f0;
+            text-shadow: 0 0 5px #ff0095;
+            box-shadow: 0 0 12px #ff3c7e;
+        }
+
+        .cashout-btn {
+            background: radial-gradient(circle at 30% 10%, #20d68a, #0c7a48);
+            border: none;
+            padding: 8px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* статус и баланс */
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 15px;
+            background: #03001270;
+            padding: 12px 20px;
+            border-radius: 40px;
+        }
+
+        .diamond-balance {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd966, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px #ffbc6e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-badge {
+            background: #1c082e;
+            padding: 6px 18px;
+            border-radius: 28px;
+            color: #cfb3ff;
+            font-weight: bold;
+        }
+
+        .multiplier-area {
+            background: #00000055;
+            border-radius: 32px;
+            padding: 10px 15px;
+            backdrop-filter: blur(8px);
+        }
+
+        /* игровое поле 6x6 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            aspect-ratio: 6 / 5;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 18px;
+            border-radius: 48px;
+            margin: 20px 0;
+            border: 1px solid #8a4dff;
+        }
+
+        .cell {
+            background: radial-gradient(ellipse at 30% 35%, #2c1048, #110428);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 6px 0 #3a1a66;
+            border: 1px solid #b77eff70;
+            text-shadow: 0 0 5px cyan;
+        }
+
+        .cell.revealed {
+            background: radial-gradient(ellipse at 30% 35%, #411d70, #1b073b);
+            box-shadow: inset 0 0 12px #bf6eff, 0 0 8px #a355ff;
+            transform: scale(0.97);
+            cursor: default;
+        }
+
+        .cell.mine-reveal {
+            background: #5a1a2e;
+            box-shadow: inset 0 0 15px #ff2a5e;
+        }
+
+        .cell:active:not(.revealed) {
+            transform: scale(0.96);
+        }
+
+        /* множители шагов (футуристическая лесенка) */
+        .multiplier-steps {
+            background: #0a001cb3;
+            border-radius: 32px;
+            padding: 16px 12px;
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 14px;
+            border: 1px solid #6b3bcb;
+        }
+
+        .step-card {
+            background: #1f0b32;
+            border-radius: 40px;
+            padding: 6px 12px;
+            min-width: 70px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #b794f0;
+            transition: 0.1s;
+            border-left: 3px solid #b77eff;
+        }
+
+        .step-card.active-step {
+            background: linear-gradient(145deg, #aa5eff, #6919e0);
+            color: white;
+            text-shadow: 0 0 4px white;
+            border-left: 3px solid gold;
+            transform: scale(1.03);
+            box-shadow: 0 0 12px #ffb86b;
+        }
+
+        .current-win {
+            font-size: 1.2rem;
+            background: #00000099;
+            padding: 6px 18px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+
+        button {
+            font-family: 'Orbitron', monospace;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: #ffcf9a;
+        }
+
+        @media (max-width: 750px) {
+            .game-container {
+                padding: 12px;
+            }
+            .grid {
+                gap: 6px;
+                padding: 8px;
+            }
+            .cell {
+                font-size: 1.3rem;
+                border-radius: 12px;
+            }
+            .option-btn {
+                padding: 4px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <!-- Верхнее меню как на макете -->
+    <div class="menu-panel">
+        <div class="menu-group">
+            <div class="menu-label">⚡ КОЛИЧЕСТВО МИН</div>
+            <div class="button-group" id="mineCountGroup">
+                <button data-mines="3" class="option-btn mine-opt active">3</button>
+                <button data-mines="5" class="option-btn mine-opt">5</button>
+                <button data-mines="10" class="option-btn mine-opt">10</button>
+                <button data-mines="20" class="option-btn mine-opt">20</button>
+            </div>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-label">💰 СУММА СТАВКИ</div>
+            <div class="button-group" id="betGroup">
+                <button data-bet="0.1" class="option-btn bet-opt active">0.1</button>
+                <button data-bet="max" class="option-btn bet-opt">MAX</button>
+                <button data-bet="0.25" class="option-btn bet-opt">≤0.25</button>
+                <button data-bet="5" class="option-btn bet-opt">≤5</button>
+                <button data-bet="10" class="option-btn bet-opt">≤10</button>
+            </div>
+        </div>
+
+        <button id="startGameBtn" class="option-btn play-btn">🎮 ИГРАТЬ</button>
+        <button id="cashoutBtn" class="option-btn cashout-btn" disabled>💎 ЗАБРАТЬ</button>
+    </div>
+
+    <!-- Статистика и алмазы -->
+    <div class="stats-row">
+        <div class="diamond-balance">
+            💎 АЛМАЗЫ: <span id="diamondsAmount">22</span>
+        </div>
+        <div class="info-badge">
+            💣 МИНЫ НА ПОЛЕ: <span id="minesCountDisplay">3</span>
+        </div>
+        <div class="current-win">
+            🎲 ПОТЕНЦИАЛ: <span id="potentialWin">0.00</span> 💎
+        </div>
+        <div class="info-badge">
+            📈 МНОЖИТЕЛЬ: <span id="currentMultiplier">1.00</span>x
+        </div>
+    </div>
+
+    <!-- Минное поле 6x6 -->
+    <div class="grid" id="mineGrid"></div>
+
+    <!-- Список множителей по шагам (от 1 до 9 и выше динамически) -->
+    <div class="multiplier-steps" id="stepsContainer">
+        <!-- JS заполнит шаги -->
+        <div style="width:100%; text-align:center; color:#ab8eff;">⚡ ШАГИ И МНОЖИТЕЛИ ⚡</div>
+    </div>
+    <div class="status-text" id="gameStatus" style="text-align:center; margin-top:12px;">⚡ Нажми "ИГРАТЬ", чтобы начать экспедицию ⚡</div>
+</div>
+
+<script>
+    // ---------- КОНФИГУРАЦИЯ ----------
+    const BOARD_SIZE = 6;        // 6x6
+    const TOTAL_CELLS = 36;
+
+    // Глобальное состояние игры
+    let balance = 22;                    // алмазы
+    let currentBet = 0.1;               // ставка
+    let selectedMines = 3;              // количество мин (3,5,10,20)
+    let gameActive = false;              // активен ли раунд (можно открывать клетки)
+    let board = [];                      // 2d массив объектов { isMine, revealed }
+    let minesPositions = new Set();      // индексы мин (0..35)
+    let openedSafeCount = 0;             // сколько открыто алмазов (безопасных)
+    let totalSafeCells = TOTAL_CELLS - selectedMines;
+    let currentMultiplierValue = 1.0;
+    let potentialWinValue = 0;
+    let gameOverFlag = false;            // проигрыш или победа
+
+    // DOM элементы
+    const gridContainer = document.getElementById('mineGrid');
+    const diamondsSpan = document.getElementById('diamondsAmount');
+    const minesCountSpan = document.getElementById('minesCountDisplay');
+    const potentialWinSpan = document.getElementById('potentialWin');
+    const currentMultiplierSpan = document.getElementById('currentMultiplier');
+    const startBtn = document.getElementById('startGameBtn');
+    const cashoutBtn = document.getElementById('cashoutBtn');
+    const gameStatusSpan = document.getElementById('gameStatus');
+    const stepsContainer = document.getElementById('stepsContainer');
+
+    // Вспомогательные: биномиальный коэффициент (точный)
+    function binomial(n, k) {
+        if (k < 0 || k > n) return 0;
+        if (k === 0 || k === n) return 1;
+        let result = 1;
+        k = Math.min(k, n - k);
+        for (let i = 1; i <= k; i++) {
+            result = result * (n - k + i) / i;
+        }
+        return result;
+    }
+
+    // Расчет множителя для k открытых алмазов (без мин) по гипергеометрической формуле: C(N, k) / C(S, k)
+    // N = всего клеток (36), S = безопасные клетки (36 - mines)
+    function calculateMultiplier(mines, openedDiamonds) {
+        const N = TOTAL_CELLS;
+        const S = N - mines;
+        if (openedDiamonds === 0) return 1.0;
+        if (openedDiamonds > S) return 0;
+        const combAll = binomial(N, openedDiamonds);
+        const combSafe = binomial(S, openedDiamonds);
+        if (combSafe === 0) return 9999;
+        return combAll / combSafe;
+    }
+
+    // Обновить интерфейс множителей (шаги 1..maxSteps)
+    function updateStepsUI() {
+        const maxPossibleSteps = totalSafeCells;
+        const stepsToShow = Math.min(maxPossibleSteps, 12); // показать до 12 шагов, красиво
+        stepsContainer.innerHTML = `<div style="width:100%; text-align:center; color:#ab8eff; margin-bottom:6px;">📊 МНОЖИТЕЛИ ЗА ШАГ 📊</div>`;
+        for (let step = 1; step <= stepsToShow; step++) {
+            let mult = calculateMultiplier(selectedMines, step);
+            if (isNaN(mult)) mult = 1;
+            const isActive = (gameActive && openedSafeCount === step);
+            const stepDiv = document.createElement('div');
+            stepDiv.className = `step-card ${isActive ? 'active-step' : ''}`;
+            stepDiv.innerHTML = `<strong>${step} ШАГ</strong><br> x${mult.toFixed(2)}`;
+            stepsContainer.appendChild(stepDiv);
+        }
+        if (maxPossibleSteps > 12) {
+            const extra = document.createElement('div');
+            extra.className = 'step-card';
+            extra.innerHTML = `...<br>до ${maxPossibleSteps}`;
+            stepsContainer.appendChild(extra);
+        }
+    }
+
+    // Обновить отображение выигрыша и множителя
+    function refreshWinAndMultiplier() {
+        if (!gameActive) {
+            currentMultiplierValue = 1.0;
+            potentialWinValue = 0;
+        } else {
+            currentMultiplierValue = calculateMultiplier(selectedMines, openedSafeCount);
+            potentialWinValue = currentBet * currentMultiplierValue;
+        }
+        currentMultiplierSpan.innerText = currentMultiplierValue.toFixed(2);
+        potentialWinSpan.innerText = potentialWinValue.toFixed(2);
+    }
+
+    // Обновить баланс и алмазы на UI
+    function updateBalanceUI() {
+        diamondsSpan.innerText = balance.toFixed(2);
+    }
+
+    // Генерация нового поля (размещение мин)
+    function generateBoard(minesCount) {
+        // очищаем доску
+        const newBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill().map(() => ({ isMine: false, revealed: false })));
+        const total = BOARD_SIZE * BOARD_SIZE;
+        const mineIndices = new Set();
+        while (mineIndices.size < minesCount) {
+            const idx = Math.floor(Math.random() * total);
+            mineIndices.add(idx);
+        }
+        // заполняем мины
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                const idx = i * BOARD_SIZE + j;
+                if (mineIndices.has(idx)) {
+                    newBoard[i][j].isMine = true;
+                }
+            }
+        }
+        return { board: newBoard, minesSet: mineIndices };
+    }
+
+    // Отрисовка сетки
+    function renderGrid() {
+        gridContainer.innerHTML = '';
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                const cell = board[i][j];
+                const idx = i * BOARD_SIZE + j;
+                const cellDiv = document.createElement('div');
+                cellDiv.classList.add('cell');
+                if (cell.revealed) {
+                    cellDiv.classList.add('revealed');
+                    if (cell.isMine) {
+                        cellDiv.classList.add('mine-reveal');
+                        cellDiv.innerText = '💣';
+                    } else {
+                        cellDiv.innerText = '💎';
+                    }
+                } else {
+                    cellDiv.innerText = '?';
+                }
+                // привязываем обработчик
+                cellDiv.addEventListener('click', (function(row, col) {
+                    return function() { onCellClick(row, col); };
+                })(i, j));
+                gridContainer.appendChild(cellDiv);
+            }
+        }
+    }
+
+    // Открыть все мины при проигрыше
+    function revealAllMines() {
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j].isMine) {
+                    board[i][j].revealed = true;
+                }
+            }
+        }
+        renderGrid();
+    }
+
+    // Закончить игру (проигрыш)
+    function loseGame() {
+        if (!gameActive) return;
+        gameActive = false;
+        gameOverFlag = true;
+        revealAllMines();
+        gameStatusSpan.innerText = '💥 ВЗРЫВ! Вы наступили на мину. Ставка сгорела. Нажмите "ИГРАТЬ" 💥';
+        cashoutBtn.disabled = true;
+        // блокируем клики (флаг gameActive уже false)
+        // баланс уже уменьшен при старте, ничего не добавляем
+    }
+
+    // Победа: собраны все алмазы
+    function winGame() {
+        if (!gameActive) return;
+        // выигрыш по текущему множителю
+        const winAmount = currentBet * currentMultiplierValue;
+        balance += winAmount;
+        updateBalanceUI();
+        gameActive = false;
+        gameOverFlag = true;
+        gameStatusSpan.innerText = `✨ ПОБЕДА! Все алмазы найдены! +${winAmount.toFixed(2)} 💎 ✨`;
+        cashoutBtn.disabled = true;
+        // показываем все алмазы
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                if (!board[i][j].isMine) board[i][j].revealed = true;
+            }
+        }
+        renderGrid();
+    }
+
+    // Забрать выигрыш (кэшаут)
+    function cashout() {
+        if (!gameActive) {
+            gameStatusSpan.innerText = '❌ Нет активной игры. Начните раунд через "ИГРАТЬ"';
+            return;
+        }
+        const winAmount = currentBet * currentMultiplierValue;
+        balance += winAmount;
+        updateBalanceUI();
+        gameActive = false;
+        gameOverFlag = true;
+        gameStatusSpan.innerText = `💰 ВЫ ЗАБРАЛИ ${winAmount.toFixed(2)} алмазов!💰`;
+        cashoutBtn.disabled = true;
+        // визуально показываем все открытые ячейки, остальные оставляем скрытыми, но игру завершаем
+        renderGrid(); // перерисовка, клики заблокированы флагом
+    }
+
+    // Обработка клика по клетке
+    function onCellClick(row, col) {
+        if (!gameActive) return;
+        const cell = board[row][col];
+        if (cell.revealed) return; // уже открыто
+
+        if (cell.isMine) {
+            // мина!
+            loseGame();
+            return;
+        }
+
+        // открываем алмаз
+        cell.revealed = true;
+        openedSafeCount++;
+        renderGrid();
+
+        // обновить множитель и выигрыш
+        refreshWinAndMultiplier();
+
+        // обновить отображение шагов (активный шаг)
+        updateStepsUI();
+
+        // Проверка на полный сбор всех алмазов
+        if (openedSafeCount === totalSafeCells) {
+            winGame();
+            return;
+        }
+
+        // обычное обновление статуса
+        gameStatusSpan.innerText = `💎 Алмаз найден! ${openedSafeCount} / ${totalSafeCells}. Множитель x${currentMultiplierValue.toFixed(2)}`;
+        // дополнительно включить кнопку кэшаут (она активна)
+        cashoutBtn.disabled = false;
+    }
+
+    // Запуск новой игры
+    function startNewGame() {
+        // проверка баланса >= ставки
+        let betValue = currentBet;
+        if (balance < betValue) {
+            gameStatusSpan.innerText = `❌ Недостаточно алмазов! Баланс: ${balance.toFixed(2)}. Сделайте меньшую ставку.`;
+            return;
+        }
+
+        // вычитаем ставку
+        balance -= betValue;
+        updateBalanceUI();
+
+        // инициализация параметров
+        gameActive = true;
+        gameOverFlag = false;
+        openedSafeCount = 0;
+        totalSafeCells = TOTAL_CELLS - selectedMines;
+        currentMultiplierValue = 1.0;
+        
+        // Генерация доски с минами
+        const { board: newBoard, minesSet } = generateBoard(selectedMines);
+        board = newBoard;
+        minesPositions = minesSet;
+        
+        // обновляем отображение мины на поле
+        minesCountSpan.innerText = selectedMines;
+        
+        // перерисовка сетки (все скрыто)
+        renderGrid();
+        
+        // пересчет множителя и потенциального выигрыша
+        refreshWinAndMultiplier();
+        
+        // обновить ступени
+        updateStepsUI();
+        
+        // кнопка cashout активна (пока можно забирать на любом шаге)
+        cashoutBtn.disabled = false;
+        gameStatusSpan.innerText = `🎲 Игра началась! Ставка: ${betValue} 💎. Открывай ячейки с кристаллами!`;
+    }
+
+    // Изменение количества мин (только если не в игре)
+    function setMinesCount(mines) {
+        if (gameActive) {
+            gameStatusSpan.innerText = '⚠️ Сначала завершите текущий раунд (нажмите ИГРАТЬ заново)';
+            return;
+        }
+        selectedMines = mines;
+        minesCountSpan.innerText = selectedMines;
+        totalSafeCells = TOTAL_CELLS - selectedMines;
+        updateStepsUI();
+        // обновить активную кнопку стиля
+        document.querySelectorAll('.mine-opt').forEach(btn => {
+            if (parseInt(btn.dataset.mines) === mines) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        // пересчёт множителя при 0 открытых (просто обновить UI)
+        refreshWinAndMultiplier();
+    }
+
+    // Установка ставки
+    function setBet(valueRaw) {
+        if (gameActive) {
+            gameStatusSpan.innerText = '⚠️ Нельзя менять ставку во время раунда. Завершите игру.';
+            return;
+        }
+        let newBet = 0;
+        if (valueRaw === 'max') {
+            newBet = balance;
+            if (newBet <= 0) newBet = 0.1;
+        } else {
+            newBet = parseFloat(valueRaw);
+            if (isNaN(newBet)) newBet = 0.1;
+            // для кнопок ≤0.25, ≤5, ≤10 – если баланс меньше, ставим баланс (но не больше лимита)
+            if (valueRaw === '0.25' && balance < 0.25) newBet = balance;
+            else if (valueRaw === '5' && balance < 5) newBet = balance;
+            else if (valueRaw === '10' && balance < 10) newBet = balance;
+            else if (valueRaw !== '0.1' && valueRaw !== 'max') {
+                if (newBet > balance) newBet = balance;
+            }
+        }
+        if (newBet <= 0) newBet = 0.1;
+        currentBet = parseFloat(newBet.toFixed(2));
+        // активная кнопка стиля
+        document.querySelectorAll('.bet-opt').forEach(btn => {
+            const val = btn.dataset.bet;
+            if ((val === 'max' && valueRaw === 'max') || (val === currentBet.toString() && valueRaw !== 'max')) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        refreshWinAndMultiplier();
+        gameStatusSpan.innerText = `Ставка: ${currentBet.toFixed(2)} 💎. Нажмите ИГРАТЬ`;
+    }
+
+    // Инициализация обработчиков
+    function bindEvents() {
+        // кнопки мин
+        document.querySelectorAll('.mine-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const minesVal = parseInt(btn.dataset.mines);
+                setMinesCount(minesVal);
+            });
+        });
+        // кнопки ставок
+        document.querySelectorAll('.bet-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const betType = btn.dataset.bet;
+                setBet(betType);
+            });
+        });
+        startBtn.addEventListener('click', () => {
+            if (gameActive) {
+                // принудительно прервём старую игру и запустим новую (без возврата ставки)
+                gameActive = false;
+            }
+            startNewGame();
+        });
+        cashoutBtn.addEventListener('click', cashout);
+    }
+
+    // Первоначальная инициализация
+    function init() {
+        bindEvents();
+        balance = 22;
+        updateBalanceUI();
+        currentBet = 0.1;
+        selectedMines = 3;
+        totalSafeCells = TOTAL_CELLS - selectedMines;
+        gameActive = false;
+        gameOverFlag = false;
+        openedSafeCount = 0;
+        // Создаем пустую доску (без мин, просто для отображения)
+        const emptyBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill().map(() => ({ isMine: false, revealed: false })));
+        board = emptyBoard;
+        renderGrid();
+        minesCountSpan.innerText = selectedMines;
+        refreshWinAndMultiplier();
+        updateStepsUI();
+        cashoutBtn.disabled = true;
+        gameStatusSpan.innerText = '⚡ ГОТОВ К ИГРЕ. ВЫБЕРИ МИНЫ И СТАВКУ ⚡';
+        // Установить активные кнопки по умолчанию
+        document.querySelector('.mine-opt[data-mines="3"]').classList.add('active');
+        document.querySelector('.bet-opt[data-bet="0.1"]').classList.add('active');
+    }
+
+    init();
+</script>
+</body>
+</html>
