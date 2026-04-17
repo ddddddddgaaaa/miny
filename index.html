@@ -154,7 +154,7 @@
             background: rgba(0,0,0,0.2);
         }
 
-        .balance-value, .win-value {
+        .win-value {
             font-size: 1.5rem;
             font-weight: bold;
             background: linear-gradient(135deg, #e2ff7a, #ffd966);
@@ -178,6 +178,25 @@
             border-radius: 48px;
             width: 100%;
             border: 1px solid #b48aff;
+            transition: transform 0.1s ease;
+        }
+
+        .grid.shake {
+            animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
         .cell {
@@ -185,7 +204,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: 0.1s linear;
@@ -193,6 +212,7 @@
             text-shadow: 0 0 3px rgba(0,0,0,0.3);
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(2px);
+            aspect-ratio: 1 / 1;
         }
 
         .cell.revealed {
@@ -220,14 +240,14 @@
             transform: none;
         }
 
-        /* анимация рулетки */
+        /* Рулетка (canvas колесо) */
         .roulette-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
@@ -237,26 +257,19 @@
         }
         .roulette-card {
             border-radius: 48px;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             border: 2px solid gold;
             box-shadow: 0 0 40px rgba(255,215,0,0.5);
-            width: 320px;
+            width: 360px;
             background: #1e1a3a;
             color: white;
         }
-        .roulette-spin {
-            font-size: 4rem;
-            margin: 20px;
-            animation: spin 0.5s ease-in-out;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .roulette-result {
-            font-size: 2rem;
-            margin: 15px;
+        canvas {
+            margin: 15px auto;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
         .close-roulette {
             background: gold;
@@ -272,11 +285,10 @@
         @media (max-width: 850px) {
             .game-container { flex-direction: column; }
             .grid { gap: 6px; padding: 12px; }
-            .cell { font-size: 0.9rem; }
+            .cell { font-size: 0.8rem; }
         }
 
-        /* ----- ТЕМЫ (4 варианта) ----- */
-        /* 1. Тёмная (dark) */
+        /* ----- ТЕМЫ (4 варианта с улучшенной контрастностью) ----- */
         body.dark {
             background: linear-gradient(145deg, #1e1a3a, #2a2448);
         }
@@ -311,7 +323,6 @@
             color: #ffdfb3;
         }
 
-        /* 2. Светлая (light) */
         body.light {
             background: linear-gradient(145deg, #e6e0f5, #d9cef0);
         }
@@ -324,7 +335,7 @@
             border-color: #b48aff;
         }
         body.light .menu-label {
-            color: #4a2f8a;
+            color: #2a1a5e;
         }
         body.light .input-field {
             background: #ffffffcc;
@@ -339,14 +350,13 @@
         body.light .cell {
             background: radial-gradient(ellipse at 30% 35%, #f0e9ff, #d9caff);
             box-shadow: 0 4px 0 #9f86d6;
-            color: #2f1b57;
+            color: #1f0e42;
         }
         body.light .status-text {
             background: #e2d6ffaa;
-            color: #3a2570;
+            color: #2a1a5e;
         }
 
-        /* 3. Неоновая (neon) — фиолетово-розовый неон */
         body.neon {
             background: linear-gradient(145deg, #0a0f2a, #0b0a20);
         }
@@ -360,13 +370,13 @@
             border-color: #ff44e6;
         }
         body.neon .menu-label {
-            color: #ffb3ff;
+            color: #ffccff;
             text-shadow: 0 0 3px #ff44e6;
         }
         body.neon .input-field {
             background: #1f1140;
             border-color: #ff66ff;
-            color: #ffdbff;
+            color: #ffe6ff;
         }
         body.neon .option-btn {
             background: #3b1b66cc;
@@ -384,11 +394,7 @@
             color: #ffc4ff;
             border: 1px solid #ff44e6;
         }
-        body.neon .stat-row {
-            background: #1a0e30aa;
-        }
 
-        /* 4. Мятная (mint) — свежая зелёно-голубая */
         body.mint {
             background: linear-gradient(145deg, #b8f2e6, #9fe0d9);
         }
@@ -401,7 +407,7 @@
             border-color: #2baa8f;
         }
         body.mint .menu-label {
-            color: #1b6b5c;
+            color: #1b5c4f;
         }
         body.mint .input-field {
             background: #ffffffcc;
@@ -416,15 +422,12 @@
         body.mint .cell {
             background: radial-gradient(ellipse at 30% 35%, #c5fff0, #a3f0e0);
             box-shadow: 0 4px 0 #2baa8f;
-            color: #1b5a4c;
+            color: #0e4a3e;
             border-color: #3ecfb0;
         }
         body.mint .status-text {
             background: #d4fff5aa;
             color: #1a6b5c;
-        }
-        body.mint .stat-row {
-            background: #d4fff5aa;
         }
     </style>
 </head>
@@ -443,7 +446,7 @@
             <div class="button-group">
                 <button id="startGameBtn" class="option-btn play-btn">🎮 НОВАЯ ИГРА</button>
                 <button id="cashoutBtn" class="option-btn cashout-btn" disabled>💎 ЗАБРАТЬ</button>
-                <button id="doubleBtn" class="option-btn double-btn" disabled>🎲 РУЛЕТКА x2</button>
+                <button id="doubleBtn" class="option-btn double-btn" disabled>🎡 РУЛЕТКА x2</button>
             </div>
             <div class="button-group">
                 <button id="themeDark" class="option-btn theme-btn">🌑 Тёмная</button>
@@ -454,10 +457,6 @@
         </div>
 
         <div class="panel-card stats-grid">
-            <div class="stat-row">
-                <span class="info-text">💰 ОБЩИЙ БАЛАНС:</span>
-                <span class="balance-value" id="balanceAmount">0</span> ₽
-            </div>
             <div class="stat-row">
                 <span class="info-text">✨ ТЕКУЩИЙ ВЫИГРЫШ:</span>
                 <span class="win-value" id="currentWin">0</span> ₽
@@ -485,9 +484,8 @@
     const BOARD_SIZE = 6;
     const TOTAL_CELLS = 36;
 
-    let balance = 0;               // общий накопленный баланс (начинается с 0)
     let currentWin = 0;           // выигрыш в текущей активной игре
-    let rewardPerCell = 10;       // награда за ячейку
+    let rewardPerCell = 10;
     let selectedMines = 5;
     let gameActive = false;
     let board = [];
@@ -495,7 +493,6 @@
     let totalSafeCells = TOTAL_CELLS - selectedMines;
 
     // DOM
-    const balanceSpan = document.getElementById('balanceAmount');
     const currentWinSpan = document.getElementById('currentWin');
     const minesCountDisplay = document.getElementById('minesCountDisplay');
     const openedSafeDisplay = document.getElementById('openedSafeDisplay');
@@ -508,9 +505,7 @@
     const rewardInput = document.getElementById('rewardInput');
     const gridContainer = document.getElementById('mineGrid');
 
-    // Обновление UI
     function updateUI() {
-        balanceSpan.innerText = balance.toFixed(2);
         currentWinSpan.innerText = currentWin.toFixed(2);
         openedSafeDisplay.innerText = openedSafeCount;
         totalSafeDisplaySpan.innerText = totalSafeCells;
@@ -523,7 +518,6 @@
         }
     }
 
-    // Генерация поля с минами
     function generateBoard(minesCount) {
         const newBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill().map(() => ({ isMine: false, revealed: false })));
         const mineIndices = new Set();
@@ -540,7 +534,6 @@
         return newBoard;
     }
 
-    // Отобразить поле с номерами ячеек (1-36)
     function renderGrid() {
         gridContainer.innerHTML = '';
         for (let i = 0; i < BOARD_SIZE; i++) {
@@ -555,7 +548,8 @@
                         cellDiv.classList.add('mine-reveal');
                         cellDiv.innerText = '💣';
                     } else {
-                        cellDiv.innerText = '💎';
+                        // показываем сумму выигрыша за эту ячейку (в рублях)
+                        cellDiv.innerText = `${rewardPerCell}₽`;
                     }
                 } else {
                     cellDiv.innerText = cellNum;
@@ -575,11 +569,20 @@
         renderGrid();
     }
 
+    // Анимация тряски поля
+    function shakeGrid() {
+        gridContainer.classList.add('shake');
+        setTimeout(() => {
+            gridContainer.classList.remove('shake');
+        }, 300);
+    }
+
     function loseGame() {
         if (!gameActive) return;
         gameActive = false;
+        shakeGrid(); // анимация взрыва
         revealAllMines();
-        gameStatusSpan.innerText = `💥 ВЗРЫВ! Вы наступили на мину. Текущий выигрыш (${currentWin.toFixed(2)} ₽) потерян.`;
+        gameStatusSpan.innerText = `💥 ВЗРЫВ! Вы наступили на мину. Потеряно ${currentWin.toFixed(2)} ₽`;
         currentWin = 0;
         updateUI();
     }
@@ -590,9 +593,7 @@
             return;
         }
         if (currentWin > 0) {
-            balance += currentWin;
-            updateUI();
-            gameStatusSpan.innerText = `💰 Вы забрали ${currentWin.toFixed(2)} ₽. Общий баланс: ${balance.toFixed(2)} ₽`;
+            gameStatusSpan.innerText = `💰 Вы забрали ${currentWin.toFixed(2)} ₽. Отличная игра!`;
             currentWin = 0;
             updateUI();
         } else {
@@ -607,44 +608,127 @@
         renderGrid();
     }
 
-    // Визуальная рулетка 50/50
-    function showRoulette(callback) {
+    // ---------- РУЛЕТКА С КОЛЕСОМ (canvas) ----------
+    let rouletteAnimation = null;
+    function showRouletteWheel(callback) {
         const overlay = document.createElement('div');
         overlay.className = 'roulette-overlay';
-        overlay.innerHTML = `
-            <div class="roulette-card">
-                <h3>🎡 РУЛЕТКА x2 🎡</h3>
-                <div class="roulette-spin">🎲</div>
-                <div class="roulette-result" id="rouletteResult">?</div>
-                <button class="close-roulette" id="closeRouletteBtn">ЗАКРЫТЬ</button>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        const spinDiv = overlay.querySelector('.roulette-spin');
-        const resultDiv = overlay.querySelector('#rouletteResult');
-        const closeBtn = overlay.querySelector('#closeRouletteBtn');
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        
+        const sectors = [
+            { label: 'x2',   color: '#4CAF50', value: 'win' },
+            { label: '0',    color: '#F44336', value: 'lose' }
+        ];
+        const sectorAngle = (Math.PI * 2) / sectors.length;
+        
+        let currentAngle = 0;
+        let spinning = false;
+        let spinStart = 0;
+        let spinDuration = 1500;
+        let targetStopAngle = 0;
+        let animationId = null;
+        let finalResult = null;
 
-        let animationDone = false;
-        spinDiv.style.animation = 'spin 0.5s ease-in-out';
-        setTimeout(() => {
-            const isWin = Math.random() < 0.5;
-            if (isWin) {
-                resultDiv.innerHTML = '🎉 ПОБЕДА! x2 🎉';
-                resultDiv.style.color = '#ffd966';
-                callback(true);
-            } else {
-                resultDiv.innerHTML = '💔 НЕУДАЧА... 0 💔';
-                resultDiv.style.color = '#ff8888';
-                callback(false);
+        function drawWheel(angle) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width/2;
+            const centerY = canvas.height/2;
+            const radius = 140;
+            for (let i = 0; i < sectors.length; i++) {
+                const start = angle + i * sectorAngle;
+                const end = start + sectorAngle;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, start, end);
+                ctx.lineTo(centerX, centerY);
+                ctx.fillStyle = sectors[i].color;
+                ctx.fill();
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(start + sectorAngle/2);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 24px "Orbitron"';
+                ctx.shadowBlur = 0;
+                ctx.fillText(sectors[i].label, radius - 45, 10);
+                ctx.restore();
             }
-            spinDiv.style.animation = '';
-            animationDone = true;
-        }, 500);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, 0, 2*Math.PI);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // стрелка
+            ctx.beginPath();
+            ctx.moveTo(centerX + 10, centerY - radius - 5);
+            ctx.lineTo(centerX - 10, centerY - radius - 5);
+            ctx.lineTo(centerX, centerY - radius - 18);
+            ctx.fillStyle = '#ffd700';
+            ctx.fill();
+        }
 
+        function spinWheel() {
+            if (spinning) return;
+            spinning = true;
+            const randomFullRotations = 5 + Math.random() * 5;
+            const totalAngle = randomFullRotations * 2 * Math.PI;
+            // определяем случайный сектор (победа или поражение)
+            const resultIndex = Math.random() < 0.5 ? 0 : 1; // win (x2) или lose (0)
+            finalResult = (sectors[resultIndex].value === 'win');
+            // вычисляем угол, на котором должен остановиться выбранный сектор (чтобы стрелка указывала на центр сектора)
+            const targetSectorCenter = (resultIndex * sectorAngle) + sectorAngle/2;
+            // текущий угол вращения: angle = startAngle + offset
+            // нужно, чтобы (startAngle + totalAngle) % (2PI) = targetSectorCenter
+            let startAngle = currentAngle;
+            let finalAngle = (startAngle + totalAngle) % (2*Math.PI);
+            let correction = (targetSectorCenter - finalAngle + 2*Math.PI) % (2*Math.PI);
+            if (correction > Math.PI) correction -= 2*Math.PI;
+            const finalTotalAngle = totalAngle + correction;
+            const startTime = performance.now();
+            
+            function animate(now) {
+                const elapsed = now - startTime;
+                let t = Math.min(1, elapsed / spinDuration);
+                // easeOutCubic
+                const ease = 1 - Math.pow(1 - t, 3);
+                const currentRotation = startAngle + finalTotalAngle * ease;
+                drawWheel(currentRotation);
+                if (t < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    drawWheel(startAngle + finalTotalAngle);
+                    spinning = false;
+                    cancelAnimationFrame(animationId);
+                    setTimeout(() => {
+                        callback(finalResult);
+                        overlay.remove();
+                    }, 300);
+                }
+            }
+            animationId = requestAnimationFrame(animate);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'roulette-card';
+        card.innerHTML = `<h3>🎡 КОЛЕСО ФОРТУНЫ 🎡</h3>`;
+        card.appendChild(canvas);
+        const closeBtn = document.createElement('button');
+        closeBtn.innerText = 'ЗАКРЫТЬ';
+        closeBtn.className = 'close-roulette';
         closeBtn.onclick = () => {
-            if (!animationDone) return;
+            if (spinning) return;
             overlay.remove();
+            if (animationId) cancelAnimationFrame(animationId);
         };
+        card.appendChild(closeBtn);
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+        
+        drawWheel(0);
+        spinWheel();
     }
 
     function doubleOrNothing() {
@@ -656,7 +740,7 @@
             gameStatusSpan.innerText = '❌ Нечего удваивать. Откройте ячейки.';
             return;
         }
-        showRoulette((isWin) => {
+        showRouletteWheel((isWin) => {
             if (isWin) {
                 currentWin = currentWin * 2;
                 updateUI();
@@ -711,8 +795,6 @@
         rewardInput.value = newReward;
         rewardPerCell = newReward;
 
-        // Обнуляем общий баланс при каждой новой игре (по просьбе пользователя)
-        balance = 0;
         gameActive = true;
         openedSafeCount = 0;
         currentWin = 0;
@@ -733,7 +815,6 @@
         document.body.className = theme;
     }
 
-    // Инициализация событий
     function bindEvents() {
         startBtn.addEventListener('click', () => {
             if (gameActive) gameActive = false;
@@ -755,7 +836,6 @@
 
     function init() {
         bindEvents();
-        balance = 0;
         currentWin = 0;
         rewardPerCell = 10;
         selectedMines = 5;
@@ -768,7 +848,7 @@
         minesCountDisplay.innerText = selectedMines;
         minesInput.value = selectedMines;
         rewardInput.value = rewardPerCell;
-        gameStatusSpan.innerText = '⚡ Баланс 0. Выберите тему, настройте игру и нажмите "НОВАЯ ИГРА"';
+        gameStatusSpan.innerText = '⚡ Выберите тему, настройте игру и нажмите "НОВАЯ ИГРА"';
         setTheme('dark');
     }
 
